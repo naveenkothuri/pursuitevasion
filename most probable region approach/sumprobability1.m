@@ -1,5 +1,5 @@
 function s=sumprobability1(tx,ty,xp,yp,xemean,yemean,kemean,sx,sy,sk)
-m=2; % this is the interval boundary which is considered so that probability is non-zero
+m=2; % this is the interval boundary which is considered so that probability is nonzero
 Prob=0;
 I1=0;
 I2=0;
