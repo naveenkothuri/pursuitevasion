@@ -1,0 +1,17 @@
+This example has the mean on or outside the perceived boundary of interception points.
+(xp,yp) = (2,1) (xt,yt) = (0,0) (xemean,yemean,kemean) = (
+20,30,3) (sx,sy,sk) = (3,3,0.5) boundary considered is 2 sigma
+
+
+*********** the end *********
+
+This is even better
+abscissamean(20,30,30,3,5,4,5,0,0,10)
+
+********************************
+
+Definetely mean lies outside
+ i=10 is a perfect example
+ abscissamean(20,30,30,3,5,-9+i,5,0,0,10), run i from 1:10 to check variations
+
+s=sumprobability1(0,0,1,5,20,30,3,3,3,0.5)
