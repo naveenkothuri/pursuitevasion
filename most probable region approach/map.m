@@ -24,7 +24,7 @@ b = coefficients (2);
 coefficients = polyfit([xe, xc], [ye, yc], 1);
 a1 = coefficients (1);
 b1 = coefficients (2);
-if(i==1)
+
 syms x y 
 if((~(isinf(a)||isnan(a)))&&(~isinf(b)))
 [solx,soly]=solve((x-xc)^2+(y-yc)^2==r^2,(a*x-y)==-b);
@@ -88,15 +88,15 @@ plot(xv,yv);
 end
 xe=xemirror;
 ye=yemirror;
-Em=[xe;ye];
 
 h=circle(xc,yc,r);
 hold on 
-%plot(xe,ye,'r*')  % evader
+plot(xe,ye,'r*')  % evader
 plot(solxm,solym,'bo')
+
 plot(xc,yc,'ro')  % center of circle
-%plot(xp,yp,'+')   % pursuer
-%plot(solxm,solym,'bo')
+if(i==1)
+plot(xp,yp,'+')   % pursuer
 if(i==1)
     xct=xc;
     yct=yc;
@@ -110,7 +110,6 @@ hold on
 
 end
 plot(tx,ty,'b*')  % target
-plot(xp,yp,'+')   % pursuer
 plot(xe,ye,'g+')
 M=(I(2)-ty)/(I(1)-tx);
 c=(yct-M*xct);

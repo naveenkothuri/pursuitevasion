@@ -146,7 +146,10 @@ for i=1:2:size(lim,2)
     datax=lim(i):((lim(i+1)-lim(i))/100):lim(i+1);
     for ll=1:size(datax,2)
     datay(ll)=fun1(datax(ll));
-    end    
+    end 
+    if(isempty(datax))
+        datay=[];
+    end
 prob=prob+trapz(datax,datay);
 end
 if((isempty(lim)))
