@@ -259,6 +259,8 @@ else
 end
 y=T;
 %{
+figure
+
 for i=1:2:size(T,2)
     arc(xcm,ycm,rm,T(i),T(i+1))
   hold on
@@ -267,6 +269,7 @@ hold on
 
 circle(xcm,ycm,rm)
 hold on
+
 for i=kemean-sk:0.05:kemean+sk
 plot3(sx*ones(size((-sx:1:sx),2))+xemean*ones(size((-sx:1:sx),2)),-sy+yemean:1:sy+yemean,i*ones(size((-sx:1:sx),2)))
 hold on
