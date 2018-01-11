@@ -1,11 +1,11 @@
 function Lim=segregate(lim)
-n=10;
+n=5;
 liml=[];
 limit=[];
 Lim=[];
 for j = 1:2:size(lim,2)
     
-for i=0:1:10
+for i=0:1:n
     liml(end+1)=lim(j)+i*(lim(j+1)-lim(j))/n;   
 end
 %so each set i.e., lim (i) to lim(i+1) corresponds to n+1 elements of lim1
