@@ -14,7 +14,7 @@
 
 clear all
 tx=-7000;ty=15000; %Target
-xp=-4000;yp=15000;  %Pursuer
+xp=7000;yp=15000;  %Pursuer
 vp=300;          % Velocity of pursuer
 T=400; %simulation steps T*delT will give total time
 delT=0.3;
@@ -78,17 +78,9 @@ Igye=Igactual(2);
    Ig=map(tx,ty,s(end).x(1),s(end).x(3),xp(end),yp(end),(s(end).x(2))/vp); % end-1 because our current values,which are needed for calculating interception point are in s(end-1) structure
     pursuerInterceptpointx(end+1)=Ig(1);
     pursuerInterceptpointy(end+1)=Ig(2);
-    %
-   % Use this code if evader also monitors pursuer's coordinates at every
-   % step and calculates corresponding interception point.
-   Igevader=map(tx,ty,tru(end-5),tru(end-3),xp(end),yp(end),(tru(end-4))/vp); % end-1 because our current values,which are needed for calculating interception point are in s(end-1) structure
+   Igevader=map(tx,ty,tru(end-2),tru(end),xp(end),yp(end),(tru(end-1))/vp); % end-1 because our current values,which are needed for calculating interception point are in s(end-1) structure
      Igxe(end+1)=Igevader(1);
      Igye(end+1)=Igevader(2);
-     ktru=(tru(end-3)-Igevader(2))/(tru(end-5)-Igevader(1));
-    vxtru=sign(Igevader(1)-tru(end-5))*tru(end-4)/sqrt(1+ktru^2);
-    vytru=ktru*vxtru;
-    u=[vxtru;vytru];
-    %}
    %%
      X4 = [xp(end),yp(end);Igactual(1),Igactual(2)];
         d4 = pdist(X4,'euclidean');

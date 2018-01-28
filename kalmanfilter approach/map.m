@@ -1,41 +1,7 @@
 
 function I= map(tx,ty,xe,ye,xp,yp,k)
 
-figure
-N=2;
-solxe=[];
-solye=[];
-%
-for r=4  
-    
-    for j=1:N*r
-        solxe(end+1)=xe+r*cos(2*pi*j/(N*r));
-        solye(end+1)=ye+r*sin(2*pi*j/(N*r));
-    end  
-end
-xei=xe;
-%
 
-
-xe=xe-0.5;
-ye=ye-0.5;
-yeg=ye;
-xpg=xp;
-ypg=yp;
-%{
-kin=k;
-for p=kin-1.5:1:kin+1.5
-k=p;
-%}
-for j=1:4
-    xe=xe+1;
-    ye=yeg;
-    
-    for k1=1:4
-        ye=ye+1;
-        yp=ypg;
-        xp=xpg;
-%}
 for i=1:1
     %k=e/p;
 xc=(xe-((xp)*(k^2)))/(1-k^2);
@@ -62,7 +28,7 @@ else
     solym=double(soly(2,1));
 end
 end
-%
+%{
 h=circle(xc,yc,r);
 hold on 
 %plot(solx,soly,'ro')
@@ -97,8 +63,6 @@ end
 %}
 end
 I=[solxm;solym];
-end
-end
 
 
 %}

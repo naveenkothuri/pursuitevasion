@@ -148,7 +148,7 @@ for i=1:2:size(limll,2)
     if(isempty(datax))
         datay=[];
     end
-prob=prob+trapz(datax,datay);
+prob=prob+rm*trapz(datax,datay);
 end
 if((isempty(lim)))
    % prob=(exp((-1./(2.*sx.^2)).*(((xe)-xemean).^2+((ye)-yemean).^2)).*exp((-1./(2.*sk.^2)).*((ke1-kemean).^2))./(((2.*pi).^1.5).*(sx.^2).*sk));
