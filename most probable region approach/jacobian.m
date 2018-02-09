@@ -1,4 +1,4 @@
-syms x y z
+syms x y z xp yp yt xt
 %{
 xp=1;
 yp=5;
@@ -26,4 +26,5 @@ A=[fun11(I(1),I(2),th) fun12(I(1),I(2),th) fun13(I(1),I(2),th);
    fun21(I(1),I(2),th) fun22(I(1),I(2),th) fun23(I(1),I(2),th);
    fun31(I(1),I(2),th) fun32(I(1),I(2),th) fun33(I(1),I(2),th)] %#ok<NOPTS
 abs(det(A))
+%fun12(I(1),I(2),th)*fun23(I(1),I(2),th)
 funds(1,2,th)

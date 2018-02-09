@@ -110,8 +110,13 @@ end
 I=[solxm solym];
 H=I;
 M=(I(2)-ty)/(I(1)-tx);
-c=(yct-M*xct); % you don't need  to calculate xct,yct to find c, because     c=yt-M*xt
+if(isnan(M))
+    M=(I(2)-ty-0.1)/(I(1)-tx);
+    end
 R1=((xp-I(1)).^2+(yp-I(2)).^2);
+if(~isinf(M))
+c=(yct-M*xct); % you don't need  to calculate xct,yct to find c, because     c=yt-M*xt
+
 P1=(yp-M*xp-c);
 L=R1/P1;
 %{
@@ -128,12 +133,12 @@ H=[H I(1)-L*M/2];
 H=[H I(2)+L/2];
 H=[H sqrt(((L^2)*(M^2+1)/4)-L*(M*I(1)-I(2)+c))]; % This term, M*I(1)-I(2)+c, is actually zero. 
 %{
-this block gives the curve parameters which we already calculated in above
-steps so commenting to save "sumprobability1" code execution time
+%this block gives the curve parameters which we already calculated in above
+%steps, so commenting to save "sumprobability1" code execution time
 xcm=I(1)-L*M/2;
 ycm=I(2)+L/2;
 rm=sqrt(((L^2)*(M^2+1)/4)-L*(M*I(1)-I(2)+c));
-%h=circle(xcm,ycm,Rm)
+%h=circle(xcm,ycm,rm)
     th = 0:pi/100:2*pi;
 xd = (rm)*cos(th) + xcm;
 yd = rm*sin(th) + ycm;
@@ -151,4 +156,48 @@ s.ke=sqrt((Rm^2-(xcm^2-I(1)^2)-(ycm^2-I(2)^2)+2*(xd*(xcm-I(1))+yd*(ycm-I(2))))/(
 plot3(xd,yd,ke)
 plot3(xd,yd,k*ones(size(xd,2)))
 %}
+else
+    if(I(1)>xe)
+        if(I(1)-xp)
+            L=R1/(I(1)-xp);
+        else
+            L=R1/(xp-I(1));
+        end
+    else
+        if(I(1)>xp)
+            L=R1/(xp-I(1));
+        else
+            L=R1/(I(1)-xp);
+        end
+    end
+    H=[H I(1)-L/2];
+    H=[H I(2)];
+    H=[H sqrt(L^2/4)];
+   
 end
+end
+%{
+ %code to check whether centers corresponding to curve lie on straight line
+xcm=I(1)-L*M/2;
+ycm=I(2)+L/2;
+rm=sqrt(((L^2)*(M^2+1)/4)-L*(M*I(1)-I(2)+c));
+xe1=[];
+ye1=[];
+for th=0:pi/10:2*pi
+    xe1(end+1)=xcm+rm*cos(th);
+    ye1(end+1)=ycm+rm*sin(th);
+end
+ke1=sqrt((rm^2-(xcm^2-I(1)^2)-(ycm^2-I(2)^2)+2*(xe1*(xcm-I(1))+ye1*(ycm-I(2))))/(R1));
+xcd=(xe1-xp*(ke1).^2)./(1-(ke1).^2);
+ycd=(ye1-yp*(ke1).^2)./(1-(ke1).^2);
+plot(xcd,ycd)
+hold on
+plot(tx,ty,'*')
+for pp=1:size(xcd,2)
+    if((abs(xcd(pp)-I(1))<0.1))
+        Pp=pp
+        break
+    end
+end
+%}  
+

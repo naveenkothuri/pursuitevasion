@@ -18,15 +18,14 @@ for r=4
     end  
 end
 %}
-n=3;
+n=5;
 xeg=xe;
 kg=k;
 yeg1=ye-2*n-n;
 yeg=ye;
-k=k-(.3)*3;
+k=k-(.1)*3;
 for k2=1:5
-k=k+(0.3);
-ye=yeg-3*n;
+k=k+(0.1);
 ye=yeg1;
 for j=1:5
    
@@ -110,7 +109,7 @@ end
 vp=10;
 vemean=kg*vp;
 sx=n; %"abscissamean" program takes only standard deviation values, so only 1 and 0.3 are being given. 
-sk=0.5;
+sk=0.1;
 sv=sk*vp;
 %P=abscissamean(xeg,yeg,vemean,sx,sv,xp,yp,xt,yt,vp)
 %l=reverseapproach(xt,yt,P(1),P(2),xp,yp,1.4)

@@ -20,7 +20,7 @@ for j=1:1
 recm=double(sqrt(k^2*((xp-I(1))^2+(yp-I(2))^2)));
 j=circle(I(1),I(2),recm);
 hold on
-xv=I(1)-50:I(1)+40;
+xv=-20:1;
 yv=M*xv+(((yp-ty)-M*(xp-tx))*k^2+ty-M*tx);
 Q=((yp-ty)-M*(xp-tx))*k^2+ty-M*tx;
 %Q1=Q*(tx-I(1));

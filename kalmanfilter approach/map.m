@@ -28,7 +28,7 @@ else
     solym=double(soly(2,1));
 end
 end
-%{
+%
 h=circle(xc,yc,r);
 hold on 
 %plot(solx,soly,'ro')
