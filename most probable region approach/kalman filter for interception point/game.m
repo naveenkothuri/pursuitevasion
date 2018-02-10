@@ -23,7 +23,7 @@ vp=300;          % Velocity of pursuer
 T=400; %simulation steps T*delT will give total time
 delT=0.3;
 ipx=-10000;ipy=10000;
-iv=400; % This is mean of output.,Initial best estimate
+iv=200; % This is mean of output.,Initial best estimate
 Wpx= 80^2; Wpy =100^2;
 Wv=50^2;
 Ig=mapkal(tx,ty,ipx,ipy,xp,yp,(iv/vp)); %Initial Intercept point based on the sensor data
@@ -100,9 +100,11 @@ Igye=Igactual(2);
         d3 = pdist(X3,'euclidean');
      if(d4<100)
         disp('Pursuer won');
+        t
         break;                        
     elseif(d3<100)
         disp('Evader won');
+        t
         break;                        
     end
  

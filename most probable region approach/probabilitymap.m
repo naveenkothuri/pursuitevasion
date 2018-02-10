@@ -1,4 +1,4 @@
-function s=probabilitymap(tx,ty,xp,yp,xemean,yemean,kemean,sx,sy,sk,m)
+function A=probabilitymap(tx,ty,xp,yp,xemean,yemean,kemean,sx,sy,sk,m)
 % m is the interval boundary which is considered so that probability is nonzeroProb=0;
 I1=0;
 I2=0;
@@ -76,7 +76,6 @@ elseif((ktl(1)<kth(1))&&(kth(2)<ktl(2)))
 
 end
 %
-hold on
 t = box(xcm,ycm,rm,m*sx,m*sy,xemean,yemean,kemean,m*sk);
 
 t(isnan(t))=[];
@@ -162,8 +161,8 @@ for i=1:2:size(limll,2)
         datay=[];
        % datay1=[];
     end
-prob=prob+trapz(datax,datay);
-%prob1=prob1+trapz(datax,datay1);
+prob=prob+1.1481*trapz(datax,datay); %the factor is to normalize for 2*sigma interval gaussian distribution,1/(0.955^3)
+%prob1=prob1+1.1481*trapz(datax,datay1);
 
 end
 else
@@ -196,4 +195,11 @@ s.X=X;
 s.Y=Y;
 s.K=K;
 s.inc=Inc;
+for i=1:size(s.I,2)
+    if(s.prob(i)==max(s.prob))
+        ind=i;
+    end
+end
+A.I=[s.I(1,ind);s.I(2,ind)];
+A.sigma=mesnoisestddev(s.prob,s.I(1,:),s.I(2,:),ind);
 %%
