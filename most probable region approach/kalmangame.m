@@ -42,7 +42,7 @@ covIx=s(end).P(1,1);
 covIy=s(end).P(2,2);
 %Later, in each step it gets updated
 s.R=[(L.sigma(1))^2 0;0 (L.sigma(1))^2]; % This is output noise covariance matrix which is assumed constant for the entire run.
-s.Q =zeros(3); % We have in our system process noise, don't forget to update this.
+s.Q =s.R; % We have in our system process noise, don't forget to update this.
 s.H= eye(2); %Checking both the states.
 %
 %Our actual system is true interception point which is pursued by the
@@ -124,9 +124,8 @@ h=circle(xc,yc,r);
  plot(posteriorposIx,posteriorposy,'b-')
  figure
  plot(posmIx,posmIy,'ro');
- plot(posteriorposIx,posteriorposy,'b-')hold on
- plot(posteriorvec,'b-');
-  plot(ktru,'g-')
+ hold on
+ plot(posteriorposIx,posteriorposy,'b-')
   hold off
   figure
   subplot(2,1,1)
