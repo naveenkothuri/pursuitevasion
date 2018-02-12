@@ -1,5 +1,5 @@
 
-function I= mapupdated(solx,soly,xe,ye,xp,yp,vp,delT)
+function I= mapupdated(solx,soly,xp,yp,vp,delT)
 for i=1:1
     %k=e/p;
 

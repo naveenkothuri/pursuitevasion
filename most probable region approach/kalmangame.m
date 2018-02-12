@@ -23,25 +23,25 @@ xp=-4000;yp=15000;  %Pursuer
 vp=300;          % Velocity of pursuer
 T=400; %simulation steps T*delT will give total time
 delT=0.3;
-ipx=-10000;ipy=10000;
+ipx=-10000;ipy=1000;
 iv=200; % This is mean of output.,Initial best estimate
 sx= 80; sy =100; %
 sv=40;
-ske=40/(300);
-L=probabilitymap(tx,ty,xp,yp,ipx,ipy,iv/vp,sx,sy,ske,2); %Initial Intercept point based on the sensor data
+sk=40/(300);
+L=probabilitymap(tx,ty,xp,yp,ipx,ipy,iv/vp,sx,sy,sk,2); %Initial Intercept point based on the sensor data
 
-xetru=ipx+sx*randn;
-yetru=ipy+sy*randn;
-ketru=(iv/vp)+sk*randn; %this is always fixed for Evader
-Igactual=map(tx,ty,xetru,yetru,xp,yp,ketru); % This is what initially pursued by evader.
+xetru=ipx+2*sx*randn;
+yetru=ipy+2*sy*randn;
+ketru=(iv/vp)+2*sk*randn; %this is always fixed for Evader
+Igactual=mapkal(tx,ty,xetru,yetru,xp,yp,ketru); % This is what initially pursued by evader.
 s.x=[L.I(1);L.I(2)];  % these are the initial state estimate of the kalman system.
 s.A=[1 0 ;0 1];
 s.B=[1 0;0 1]; 
-s.P=[(L.sigma(1))^2 0;0 (L.sigma(1))^2]; % This is jsut for initialization. Initially it is equal to output covariance matrix
+s.P=[(L.sigma(1))^2 0;0 (L.sigma(2))^2]; % This is jsut for initialization. Initially it is equal to output covariance matrix
 covIx=s(end).P(1,1);
 covIy=s(end).P(2,2);
 %Later, in each step it gets updated
-s.R=[(L.sigma(1))^2 0;0 (L.sigma(1))^2]; % This is output noise covariance matrix which is assumed constant for the entire run.
+s.R=[(L.sigma(1))^2 0;0 (L.sigma(2))^2]; % This is output noise covariance matrix which is assumed constant for the entire run.
 s.Q =s.R; % We have in our system process noise, don't forget to update this.
 s.H= eye(2); %Checking both the states.
 %
@@ -55,7 +55,7 @@ Igye=Igactual(2);
  for t=1:T
   
      E=mapupdatedkal(tru(end-1),tru(end),xetru(end),yetru(end),ketru(end)*vp,delT);
-     Pursuer=mapupdatedkal(s.x(1),s.x(2),xp(end),yp(end),vp,delT);
+     Pursuer=mapupdatedkal(s(end).x(1),s(end).x(2),xp(end),yp(end),vp,delT);
      xetru(end+1)=E(1);yetru(end+1)=E(2);
      xp(end+1)=Pursuer(1);yp(end+1)=Pursuer(2);
      if(t~=1)
@@ -63,10 +63,15 @@ Igye=Igactual(2);
      else
          s(end).u=[0;0];
      end
-    L(end+1)=probabilitymap(tx,ty,xp(end),yp(end),xetru(end)+sx*randn,yetru(end)+sy*randn,ketru,sx,sy,sk,m);%because ketru is always same for evader.
-
+   % L(end+1)=probabilitymap(tx,ty,xp(end),yp(end),xetru(end)+2*sx*randn,yetru(end)+2*sy*randn,ketru+2*sk*randn,sx,sy,sk,m);%because ketru is always same for evader.
+  % use this L if you think maximum probable point is not the interception
+  % point corresponding to mean point.So I am using this to reduce
+  % computation time.
+ II= mapkal(tx,ty,xetru(end)+2*sx*randn,yetru(end)+2*sy*randn,xp(end),yp(end),ketru+2*sk*randn);
+L(end+1).I=II;
+L(end).sigma=L(end-1).sigma; % please study, these are the places you need to improve your algorithm
     tru(end+1:end+2,1) =mapkal(tx,ty,xetru(end),yetru(end),xp(end),yp(end),ketru(end));% These are actual states. We induce noise here to get actual output. 
-   s(end).z = (s(end).H)*tru(end-4:end-2,1) + sqrt(s(end).R)*randn(2,1); % Here we are using tru(end-4:end-2) because present states are stored there
+   s(end).z = (s(end).H)*tru(end-3:end-2,1) + sqrt(s(end).R)*randn(2,1); % Here we are using tru(end-3:end-2) because present states are stored there
    %create a measurement. ( This is actual measurement)
    %Note that when t=0, s.x is still the initial value. This along with
    %actual output is given to kalman filter.
@@ -81,9 +86,9 @@ Igye=Igactual(2);
    covIx(end+1)=s(end).P(1,1);  %just to plot covariances
    covIy(end+1)=s(end).P(2,2);
    %}
-     X4 = [xp(end),yp(end);tru(end-4),tru(end-2)];
+     X4 = [xp(end),yp(end);tru(end-3),tru(end-2)];
         d4 = pdist(X4,'euclidean');
-                X3 = [xetru(end),yetru(end);tru(end-4),tru(end-4)];
+                X3 = [xetru(end),yetru(end);tru(end-3),tru(end-2)];
         d3 = pdist(X3,'euclidean');
      if(d4<100)
         disp('Pursuer won');
@@ -103,13 +108,13 @@ Igye=Igactual(2);
  posmIy(:,i)= s(i).z(2);
  end
  for i=1:t-1
- posteriorposx(:,i)= s(i+1).x(1);
- posteriorposy(:,i)= s(i+1).x(2);
+ posteriorposIx(:,i)= s(i+1).x(1);
+ posteriorposIy(:,i)= s(i+1).x(2);
 
  end
  for i =1:t
      Igactualx(i)=tru(1+2*(i-1));
-     Igactualy(i)=tru(2+3*(i-1));
+     Igactualy(i)=tru(2+2*(i-1));
  end
  %
  xc=(xetru(1)-((xp(1))*((ketru)^2)))/(1-(ketru)^2);
@@ -117,20 +122,20 @@ yc=(yetru(1)-((yp(1))*((ketru)^2)))/(1-(ketru)^2);
 r=double(sqrt(xc^2+yc^2-((xetru(1)^2+yetru(1)^2)/(1-(ketru)^2))+((ketru)^2*(xp(1)^2+yp(1)^2))/(1-(ketru)^2)));
 h=circle(xc,yc,r);
  hold on
-  plot(xe,ye,'r.');
+  plot(xetru,yetru,'r.');
   plot(tx,ty,'r*');
   plot(xp,yp,'b.');
   plot(posmIx,posmIy,'ro');
- plot(posteriorposIx,posteriorposy,'b-')
+ plot(posteriorposIx,posteriorposIy,'b*')
  figure
  plot(posmIx,posmIy,'ro');
  hold on
- plot(posteriorposIx,posteriorposy,'b-')
+ plot(posteriorposIx,posteriorposIy,'b*')
   hold off
+i=1:t+1;
   figure
   subplot(2,1,1)
-  plot(covIx)
+  plot(i,covIx)
   subplot(2,1,2)
-  plot(covIy)
-  
+  plot(i,covIy)
   

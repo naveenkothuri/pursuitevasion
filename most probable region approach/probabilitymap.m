@@ -1,4 +1,5 @@
-function A=probabilitymap(tx,ty,xp,yp,xemean,yemean,kemean,sx,sy,sk,m)
+
+function Ans=probabilitymap(tx,ty,xp,yp,xemean,yemean,kemean,sx,sy,sk,m)
 % m is the interval boundary which is considered so that probability is nonzeroProb=0;
 I1=0;
 I2=0;
@@ -200,6 +201,6 @@ for i=1:size(s.I,2)
         ind=i;
     end
 end
-A.I=[s.I(1,ind);s.I(2,ind)];
-A.sigma=mesnoisestddev(s.prob,s.I(1,:),s.I(2,:),ind);
+Ans.I=[s.I(1,ind);s.I(2,ind)];
+Ans.sigma=mesnoisestddev(s.prob,s.I(1,:),s.I(2,:),ind);
 %%
