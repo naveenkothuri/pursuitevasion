@@ -1,5 +1,5 @@
 
-function s= map1(tx,ty,xe,ye,xp,yp,k)
+function s= mapkal1(tx,ty,xe,ye,xp,yp,k)
 figure
 vp=2;
 ve=k*vp;
@@ -38,7 +38,12 @@ end
 if(i==1)
     u(1)=solxm;
     u(2)=solym;
+    coefficients = polyfit([double(solxm), xp], [double(solym), yp], 1);
+a1 = coefficients (1);
+b1 = coefficients (2);
+plot(solxm,solym,'r*')
 end
+
 %
 s.r(end+1)=r;
 s.xc(end+1)=xc;
@@ -75,6 +80,16 @@ E(1)=xe;E(2)=ye;
 P(1)=xp;P(2)=yp;
 %}
 %
+ %This code is to check what happens non optimal trajectory pursued by pursuer
+E=mapupdatedkal(solxm,solym,xe,ye,k*vp,0.2);
+plot(solxm,solym,'b*');
+
+xe=E(1);ye=E(2);
+
+P=mapupdatedkal(u(1)+2,u(2)+2,xp,yp,vp,0.2);
+xp=P(1);yp=P(2);
+%}
+%{
 rr=k*sqrt((xp-solxm)^2+(yp-solym)^2);
 if(i==1)
 circle(solxm,solym,rr)
@@ -84,9 +99,10 @@ Ey(end+1)=solym+rr*sin(j*2*pi/7);
 end
 end
  %This code is to generate circle C1.
-
 E(1)=Ex(i+1);E(2)=Ey(i+1);
 P(1)=xp;P(2)=yp;
+%}
+
 %}
 
 
@@ -94,11 +110,7 @@ Ex(end+1)=E(1);
 Ey(end+1)=E(2);
 Px(end+1)=P(1);
 Py(end+1)=P(2);
-xp=Px(end);
-yp=Py(end);
-xe=Ex(end);
-ye=Ey(end);
-
+end
 %}
 %% for the movement of pursuer and evader 
 %{
@@ -122,13 +134,12 @@ if((xp~=e))
 yp=(a2)*(xp)+b2;
 end
 %}
-end
 I=[solxm;solym];
 plot(tx,ty,'b*')  % target
 %plot(Ex,Ey)
 plot(Px,Py,'b+')
 %plot(solxm,solym,'bo')
-plot(Ex,Ey,'r*')
+plot(Ex,Ey,'g.')
 %}
 s.Ex=Ex;
 s.Ey=Ey;

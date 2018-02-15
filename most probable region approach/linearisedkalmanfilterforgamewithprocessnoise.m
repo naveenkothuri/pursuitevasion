@@ -20,7 +20,7 @@ clear all
 tx=50;ty=40; %Target
 xp=120;yp=-30;  %Pursuer
 vp=10;          % Velocity of pursuer
-T=100; %simulation steps T*delT will give total time
+T=80; %simulation steps T*delT will give total time
 delT=0.1;
 s.u=0;
 ipx=120;ipy=40;
@@ -41,30 +41,32 @@ s.P=[Wpx 0 0; 0 Wv 0;0 0 Wpy]; % This is jsut for initialization. Initially it i
 covx=s(end).P(1,1);
 covv=s(end).P(2,2);
 covy=s(end).P(3,3);
-%s.x1=s.x;
 %Later, in each step it gets updated
 s.R=[Wpx 0 0 ;0 Wv 0 ;0 0 Wpy]; % This is output noise covariance matrix which is assumed constant for the entire run.
-%s.Q =[0.5*Wpx .7 .8 ;0 0.5*Wv 0 ;.8 .8 0.5*Wpy];
-s.Q =[0.5*Wpx 0 0 ;0 0 0 ;0 0 0.5*Wpy];
+s.Q =2*[Wpx .7 .8 ;0 Wv 0 ;.8 .8 Wpy];
+%s.Q=[1 0 0;0 Wv 0;0 0 1]*2;
 %s.Q=zeros(3);
 s.H= eye(3);
 hh=0;
-vtru=iv+sqrt(Wv)*3; %exact states;
+%
+vtru=iv+sqrt(Wv)*randn; %exact states;
 %normrnd(0,sqrt(Wpx))
-xtru= ipx+sqrt(Wpx)*3;
-ytru=ipy+sqrt(Wpy)*3;
+xtru= ipx+sqrt(Wpx)*randn;
+ytru=ipy+sqrt(Wpy)*randn;
 Igevader=mapkal(tx,ty,xtru,ytru,xp,yp,vtru/vp);
-%{
+ tru=[xtru;vtru;ytru]; % true initial states
+%}
+
 vtru1=iv+sqrt(Wv)*randn; %exact states;
 %normrnd(0,sqrt(Wpx))
 xtru1= ipx+sqrt(Wpx)*randn;
 ytru1=ipy+sqrt(Wpy)*randn;
 Igevader1=mapkal(tx,ty,xtru1,ytru1,xp,yp,vtru1/vp);
 tru1=[xtru1;vtru1;ytru1]; % evader initial states 
-%}
-Igxe=Igevader(1);
-Igye=Igevader(2);
- tru=[xtru;vtru;ytru]; % true initial states
+
+Igxe=Igevader1(1);
+Igye=Igevader1(2);
+
  
     %{
  ktru=(tru(3)-Igevader(2))/(tru(1)-Igevader(1));
@@ -73,19 +75,19 @@ Igye=Igevader(2);
      u=[vxtru;vytru];
  %}
      syms a1 a2 a3 a4 a5
-xenext=a1+delT*a5*vp*cos(atan((a2-(((a2-a4*a5^2)/(1-a5^2))+sign(ty-((a2-a4*a5^2)/(1-a5^2)))*sqrt(((sqrt(((a1-a3)^2+(a2-a4)^2)*(a5^2/(1-a5^2)^2)))*((ty-((a2-a4*a5^2)/(1-a5^2)))/(tx-((a1-a3*a5^2)/(1-a5^2)))))^2/(1+((ty-((a2-a4*a5^2)/(1-a5^2)))/(tx-((a1-a3*a5^2)/(1-a5^2))))^2))))/(a1-(((a1-a3*a5^2)/(1-a5^2))+sign(tx-((a1-a3*a5^2)/(1-a5^2)))*sqrt((sqrt(((a1-a3)^2+(a2-a4)^2)*(a5^2/(1-a5^2)^2)))^2/(1+((ty-((a2-a4*a5^2)/(1-a5^2)))/(tx-((a1-a3*a5^2)/(1-a5^2))))^2))))));
-yenext=a2+delT*a5*vp*sin(atan((a2-(((a2-a4*a5^2)/(1-a5^2))+sign(ty-((a2-a4*a5^2)/(1-a5^2)))*sqrt(((sqrt(((a1-a3)^2+(a2-a4)^2)*(a5^2/(1-a5^2)^2)))*((ty-((a2-a4*a5^2)/(1-a5^2)))/(tx-((a1-a3*a5^2)/(1-a5^2)))))^2/(1+((ty-((a2-a4*a5^2)/(1-a5^2)))/(tx-((a1-a3*a5^2)/(1-a5^2))))^2))))/(a1-(((a1-a3*a5^2)/(1-a5^2))+sign(tx-((a1-a3*a5^2)/(1-a5^2)))*sqrt((sqrt(((a1-a3)^2+(a2-a4)^2)*(a5^2/(1-a5^2)^2)))^2/(1+((ty-((a2-a4*a5^2)/(1-a5^2)))/(tx-((a1-a3*a5^2)/(1-a5^2))))^2))))));
+xedot=a5*vp*cos(atan((a2-(((a2-a4*a5^2)/(1-a5^2))+sign(ty-((a2-a4*a5^2)/(1-a5^2)))*sqrt(((sqrt(((a1-a3)^2+(a2-a4)^2)*(a5^2/(1-a5^2)^2)))*((ty-((a2-a4*a5^2)/(1-a5^2)))/(tx-((a1-a3*a5^2)/(1-a5^2)))))^2/(1+((ty-((a2-a4*a5^2)/(1-a5^2)))/(tx-((a1-a3*a5^2)/(1-a5^2))))^2))))/(a1-(((a1-a3*a5^2)/(1-a5^2))+sign(tx-((a1-a3*a5^2)/(1-a5^2)))*sqrt((sqrt(((a1-a3)^2+(a2-a4)^2)*(a5^2/(1-a5^2)^2)))^2/(1+((ty-((a2-a4*a5^2)/(1-a5^2)))/(tx-((a1-a3*a5^2)/(1-a5^2))))^2))))));
+yedot=a5*vp*sin(atan((a2-(((a2-a4*a5^2)/(1-a5^2))+sign(ty-((a2-a4*a5^2)/(1-a5^2)))*sqrt(((sqrt(((a1-a3)^2+(a2-a4)^2)*(a5^2/(1-a5^2)^2)))*((ty-((a2-a4*a5^2)/(1-a5^2)))/(tx-((a1-a3*a5^2)/(1-a5^2)))))^2/(1+((ty-((a2-a4*a5^2)/(1-a5^2)))/(tx-((a1-a3*a5^2)/(1-a5^2))))^2))))/(a1-(((a1-a3*a5^2)/(1-a5^2))+sign(tx-((a1-a3*a5^2)/(1-a5^2)))*sqrt((sqrt(((a1-a3)^2+(a2-a4)^2)*(a5^2/(1-a5^2)^2)))^2/(1+((ty-((a2-a4*a5^2)/(1-a5^2)))/(tx-((a1-a3*a5^2)/(1-a5^2))))^2))))));
 
-dfdxxe=diff(xenext,a1);
-dfdxye=diff(xenext,a2);
-dfdxke=diff(xenext,a5);
-dfdyxe=diff(yenext,a1);
-dfdyye=diff(yenext,a2);
-dfdyke=diff(yenext,a5);
-dfdzxxp=diff(xenext,a3);
-dfdzxyp=diff(xenext,a4);
-dfdzyxp=diff(yenext,a3);
-dfdzyyp=diff(yenext,a4);
+dfdxxe=diff(xedot,a1);
+dfdxye=diff(xedot,a2);
+dfdxke=diff(xedot,a5);
+dfdyxe=diff(yedot,a1);
+dfdyye=diff(yedot,a2);
+dfdyke=diff(yedot,a5);
+dfdzxxp=diff(xedot,a3);
+dfdzxyp=diff(xedot,a4);
+dfdzyxp=diff(yedot,a3);
+dfdzyyp=diff(yedot,a4);
 %s.A1=[1 0 0;0 1 0; 0 0 1 ];
 %s.B1=[1 0;0 0;0 1]; %So delT is included in B matrix % This is just initialization because xp(end-1) is not available yet.
 for t=1:T
@@ -99,14 +101,14 @@ A31=double(subs(dfdyxe,{a1,a2,a3,a4,a5},{s(end).x(1),s(end).x(3),xp(end),yp(end)
 A32=double(subs(dfdyke,{a1,a2,a3,a4,a5},{s(end).x(1),s(end).x(3),xp(end),yp(end),s(end).x(2)}));
 
 A33=double(subs(dfdyye,{a1,a2,a3,a4,a5},{s(end).x(1),s(end).x(3),xp(end),yp(end),s(end).x(2)}));
-s(end).A=[A11 A12 A13;0 1 0;A31 A32 A33];
-%eig(s(end).A-(s(end).K)*(s(end).H))
-rank(ctrb(s(end).A,s(end).Q))
+s(end).A=[A11 A12 A13;0 0 0;A31 A32 A33];
+eig(s(end).A-(s(end).K)*(s(end).H))
+rank(obsv(s(end).A,s(end).H))
 %s(end).A=s(1).A;
-dfdzxxp=diff(xenext,a3);
-dfdzxyp=diff(xenext,a4);
-dfdzyxp=diff(yenext,a3);
-dfdzyyp=diff(yenext,a4);
+dfdzxxp=diff(xedot,a3);
+dfdzxyp=diff(xedot,a4);
+dfdzyxp=diff(yedot,a3);
+dfdzyyp=diff(yedot,a4);
 B11=double(subs(dfdzxxp,{a1,a2,a3,a4,a5},{s(end).x(1),s(end).x(3),xp(end),yp(end),s(end).x(2)}));
 B12=double(subs(dfdzxyp,{a1,a2,a3,a4,a5},{s(end).x(1),s(end).x(3),xp(end),yp(end),s(end).x(2)}));
 B31=double(subs(dfdzyxp,{a1,a2,a3,a4,a5},{s(end).x(1),s(end).x(3),xp(end),yp(end),s(end).x(2)}));
@@ -122,10 +124,10 @@ s(end).B=[B11 B12;0 0;B31 B32];
      s(end).u=[vx;vy];
   %}
     evader= mapupdatedkal(Igevader(1),Igevader(2),tru(end-2),tru(end),tru(end-1),delT);%This is actual evader, 
-    %evader1= mapupdatedkal(Igevader1(1),Igevader1(2),tru1(end-2),tru1(end),tru1(end-1),delT);% This is what evader thinks actual
+    evader1= mapupdatedkal(Igevader1(1),Igevader1(2),tru1(end-2),tru1(end),tru1(end-1),delT);% This is what evader thinks actual
     tru(end+1:end+3,1) = [evader(1);tru(end-1);evader(2)];
-    %tru1(end+1:end+3,1) = [evader1(1);tru1(end-1);evader1(2)]+s(end).Q*[randn;randn;randn];
-   s(end).z = (s(end).H)*(tru(end-5:end-3,1)) + sqrt(s(end).R)*randn(3,1); % Here we are using tru(end-5:end-3) because present states are stored there
+    tru1(end+1:end+3,1) = [evader1(1);tru1(end-1);evader1(2)]+sqrt(s(end).Q)*[randn;randn;randn];
+   s(end).z = (s(end).H)*(tru1(end-5:end-3,1)) + sqrt(s(end).R)*randn(3,1); % Here we are using tru(end-5:end-3) because present states are stored there
    %create a measurement. ( This is actual measurement)
    %Note that when t=0, s.x is still the initial value. This along with
    %actual output is given to kalman filter.
@@ -155,7 +157,7 @@ s(end).B=[B11 B12;0 0;B31 B32];
    %step and calculates corresponding interception point.
    if(hh~=1)
    Igevader=mapkal(tx,ty,tru(end-2),tru(end),xp(end),yp(end),(tru(end-1))/vp); % end-1 because our current values,which are needed for calculating interception point are in s(end-1) structure
-   %Igevader1=mapkal(tx,ty,tru1(end-2),tru1(end),xp(end),yp(end),(tru1(end-1))/vp); % end-1 because our current values,which are needed for calculating interception point are in s(end-1) structure
+   Igevader1=mapkal(tx,ty,tru1(end-2),tru1(end),xp(end),yp(end),(tru1(end-1))/vp); % end-1 because our current values,which are needed for calculating interception point are in s(end-1) structure
 
    end
    %{
@@ -167,13 +169,13 @@ s(end).B=[B11 B12;0 0;B31 B32];
     u=[vxtru;vytru];
     
    %}
-     X4 = [xp(end),yp(end);tru(end-2),tru(end)];
+     X4 = [xp(end),yp(end);tru1(end-2),tru1(end)];
         d4 = pdist(X4,'euclidean');
-                X3 = [tru(end-2),tru(end);Igevader(1),Igevader(2)];
+                X3 = [tru1(end-2),tru1(end);Igevader1(1),Igevader1(2)];
         d3 = pdist(X3,'euclidean');
          
         
-        X2 = [tru(end-2),tru(end);tx,ty];
+        X2 = [tru1(end-2),tru1(end);tx,ty];
         d2 = pdist(X2,'euclidean');
        
      if(d4<3)
@@ -190,7 +192,7 @@ s(end).B=[B11 B12;0 0;B31 B32];
             break;  
         end                       
      end
-     %{
+     %
      X31 = [tru1(end-2),tru1(end);Igevader1(1),Igevader1(2)];
         d31 = pdist(X31,'euclidean');
          X21 = [tru1(end-2),tru1(end);tx,ty];
@@ -214,12 +216,12 @@ s(end).B=[B11 B12;0 0;B31 B32];
  posteriorposx(:,i)= s(i+1).x(1);
  posteriorvec(:,i)= s(i+1).x(2);
  posteriorposy(:,i)= s(i+1).x(3);
+
  end
- 
  for i =1:t
-     xtru(i)=tru(1+3*(i-1));
-     vtru(i)=tru(2+3*(i-1));
-     ytru(i)=tru(3+3*(i-1));
+     xtru1(i)=tru1(1+3*(i-1));
+     vtru1(i)=tru1(2+3*(i-1));
+     ytru1(i)=tru1(3+3*(i-1));
  end
  %{
   for i =1:t
@@ -227,33 +229,34 @@ s(end).B=[B11 B12;0 0;B31 B32];
      vtru1(i)=tru1(2+3*(i-1));
      ytru1(i)=tru1(3+3*(i-1));
  end
- %}
+ 
  xc=(xtru(1)-((xp(1))*((vtru(1)/vp)^2)))/(1-(vtru(1)/vp)^2);
 yc=(ytru(1)-((yp(1))*((vtru(1)/vp)^2)))/(1-(vtru(1)/vp)^2);
 r=double(sqrt(xc^2+yc^2-((xtru(1)^2+ytru(1)^2)/(1-(vtru(1)/vp)^2))+((vtru(1)/vp)^2*(xp(1)^2+yp(1)^2))/(1-(vtru(1)/vp)^2)));
 h=circle(xc,yc,r);
 
  hold on
- %{
+ 
  xc1=(xtru1(1)-((xp(1))*((vtru1(1)/vp)^2)))/(1-(vtru1(1)/vp)^2);
 yc1=(ytru1(1)-((yp(1))*((vtru1(1)/vp)^2)))/(1-(vtru1(1)/vp)^2);
 r1=double(sqrt(xc1^2+yc1^2-((xtru1(1)^2+ytru1(1)^2)/(1-(vtru1(1)/vp)^2))+((vtru1(1)/vp)^2*(xp(1)^2+yp(1)^2))/(1-(vtru1(1)/vp)^2)));
 h=circle(xc1,yc1,r1);
-hold on
  %}
+hold on
+ 
   plot(posmx,posmy,'r.')
   plot(pursuerInterceptpointx,pursuerInterceptpointy,'bo')
   plot(tx,ty,'r*');
   plot(xp,yp,'b.');
-  plot(Igevader(1),Igevader(2),'ro');
+  plot(Igevader1(1),Igevader1(2),'ro');
   
  %plot(posteriorposx,posteriorposy,'b*')
- plot(xtru,ytru,'g.')
+ plot(xtru1,ytru1,'g.')
      figure
  plot(vecm,'r.')
  hold on
  plot(posteriorvec,'b-');
-  plot(vtru,'g-')
+  plot(vtru1,'g-')
   hold off
   figure
   subplot(3,1,1)
@@ -263,5 +266,5 @@ hold on
   subplot(3,1,3)
   plot(covy)
   
-      figure
-  plot(xtru(2:end)-posteriorposx)
+  figure
+  plot(xtru1(2:end)-posteriorposx)

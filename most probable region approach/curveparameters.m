@@ -152,7 +152,7 @@ hold on
 xlabel('abscissa of evader');
 ylabel('ordinate of evader');
 zlabel('velocity of evader');
-s.ke=sqrt((Rm^2-(xcm^2-I(1)^2)-(ycm^2-I(2)^2)+2*(xd*(xcm-I(1))+yd*(ycm-I(2))))/(R1));
+s.ke=sqrt((rm^2-(xcm^2-I(1)^2)-(ycm^2-I(2)^2)+2*(xd*(xcm-I(1))+yd*(ycm-I(2))))/(R1));
 plot3(xd,yd,ke)
 plot3(xd,yd,k*ones(size(xd,2)))
 %}

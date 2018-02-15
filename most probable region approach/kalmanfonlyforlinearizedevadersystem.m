@@ -170,7 +170,12 @@ else
    
    % Prediction for state vector and covariance:
 
-       s.x=s.A1*(s.x)+s.B1*(s.u);
+      m=mapupdatedkal(s.Ig(1),s.Ig(2),s.x(1),s.x(3),(s.x(2)),s.delT);
+          %  m1=mapupdatedkal(s.Ig(1),s.Ig(2),s.x1(1),s.x1(3),(s.x1(2)),s.delT);
+
+      s.x=[m(1);s.x(2);m(2)];
+          %  s.x1=[m1(1);s.x1(2);m1(2)];
+
    s.P = s.A * s.P * s.A' + s.Q;
 
    % Compute Kalman gain factor:
@@ -179,7 +184,7 @@ else
    % Correction based on observation:
    s.x = s.x + K*(s.z-s.H*s.x);
    s.P = s.P - K*s.H*s.P;
-   
+   s.K=K;
    % Note that the desired result, which is an improved estimate
    % of the sytem state vector x and its covariance P, was obtained
    % in only five lines of code, once the system was defined. (That's
