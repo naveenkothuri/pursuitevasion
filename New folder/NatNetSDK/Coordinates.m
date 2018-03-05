@@ -27,7 +27,7 @@ function setup(block)
   %block.OutputPort(1).Dimensions       = 3;
  
   %% Set block sample time to [0.01 0]
-  block.SampleTimes = [0.2 0];
+  block.SampleTimes = [0.01 0];
  %%%%%%%%%%%%%%%%%%%%%%%%%% Changed from 0.01 to 0.02 %%%%%%%%%%%%%%%%%%%%%%%%%%%
  
   %% Set the block simStateCompliance to default (i.e., same as a built-in block)
@@ -60,7 +60,7 @@ function InitConditions(block)
   %% Initialize Dwork
   block.Dwork(1).Data = block.DialogPrm(1).Data;
  
- display('NatNet Samcple Begin')
+ display('NatNet Sample Begin')
     global theClient;
     global frameRate;
     lastFrameTime = -1.0;
@@ -84,9 +84,9 @@ function InitConditions(block)
         % TODO : update the path to your NatNetML.DLL file here :
 	%%%%%%%%%%%%%%%%% CHANGED HERE %%%%%%%%%%%%%%%%%%%
         %dllPath = fullfile('c:','NatNetSDK2.5','Samples','bin','NatNetML.dll');
-        dllPath = fullfile('c:','NatNet_SDK_2.7','NatNetSDK','lib','x64','NatNetML.dll');
+        dllPath = fullfile('D:','NatNetSDK','lib','x64','NatNetML.dll');
         %dllPath = fullfile('c:','NaturalPoint Trackd Module','naturalpointtracker.dll');
-        dllPath = 'C:\Users\Control Lab\Desktop\naveen\pursuitevasion-master\pursuitevasion-master\New folder\NatNetSDK\lib\x64\NatNetML.dll';
+        dllPath = 'D:\NatNetSDK\lib\x64\NatNetML.dll';
         assemblyInfo = NET.addAssembly(dllPath);
  
         % Create an instance of a NatNet client
@@ -128,6 +128,7 @@ function InitConditions(block)
         %block.OutputPort(1).Data = block.Dwork(1).Data;
         global theClient;
         java.lang.Thread.sleep(5);
+        
         data = theClient.GetLastFrameOfData();
         D=ProcessFrame(data);
         %block.OutputPort(1).Data=double([D.x1;D.y1;D.z1]);
@@ -165,28 +166,32 @@ function InitConditions(block)
           % Position
          
           % Test : Marker Y Position Data
-          % angleY = data.LabeledMarkers(1).y;
+          %angleY = data.LabeledMarkers(1).y;
          
           % Test : Rigid Body Y Position Data
           D.x1= rigidBody1Data.x; %*1000
           D.y1= rigidBody1Data.y;
           D.z1= rigidBody1Data.z;
-          
-%           D.x2= rigidBody2Data.x; %*1000
-%           D.y2= rigidBody2Data.y;
-%           D.z2= rigidBody2Data.z;
+          %disp(D.x1)
+         
+         % D.x2= rigidBody2Data.x; %*1000
+          % D.y2= rigidBody2Data.y;
+          % D.z2= rigidBody2Data.z;
+          % disp(D.x2)
          
           % Test : Rigid Body 'Yaw'
           % Note : Motive display euler's is X (Pitch), Y (Yaw), Z (Roll), Right-Handed (RHS), Relative Axes
           % so we decode eulers heres to match that.
          
-          % Angles
+          %Angles
 %           
-          q = quaternion( rigidBody1Data.qx, rigidBody1Data.qy, rigidBody1Data.qz, rigidBody1Data.qw );
+           q = quaternion( rigidBody1Data.qy,rigidBody1Data.qx, rigidBody1Data.qz, rigidBody1Data.qw );
+           %q2 = quaternion( rigidBody2Data.qy,rigidBody1Data.qx, rigidBody1Data.qz, rigidBody1Data.qw );
            qRot = quaternion( 0, 0, 0, 1);     % rotate pitch 180 to avoid 180/-180 flip for nicer graphing
            q = mtimes(q, qRot);
            angles = EulerAngles(q,'zyx');
            D.angleX = -angles(1) * 180.0 / pi;   % must invert due to 180 flip above
            D.angleY = angles(2) * 180.0 / pi;
            D.angleZ = -angles(3) * 180.0 / pi;   % must invert due to 180 flip above
-          %endfunction
+      %end function
+      
