@@ -202,5 +202,5 @@ for i=1:size(s.I,2)
     end
 end
 Ans.I=[s.I(1,ind);s.I(2,ind)];
-Ans.sigma=mesnoisestddev(s.prob,s.I(1,:),s.I(2,:),ind);
+Ans.sigma=mesnoisestddev1(s.prob,s.I(1,:),s.I(2,:));
 %%

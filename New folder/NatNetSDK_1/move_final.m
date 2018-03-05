@@ -1,0 +1,5 @@
+function move_final((x2,y2))
+x1,y1 = get_data()
+tyaw = get_angle((x1,y1),(x2,y2))
+turn_bot(tyaw)
+move_bot((x2,y2))

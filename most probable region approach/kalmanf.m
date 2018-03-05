@@ -144,6 +144,17 @@
 % title('Automobile Voltimeter Example')
 % hold off
 
+%{
+F=[(sk*vp)^2 0 0 0 0 0 0 0;
+   0 (sk*vp)^2 0 0 0 0 0 0;
+   0 0 0 0 0 0 0 0;
+   0 0 0 0 0 0 0 0;
+   0 0 0 0 (sx)^2 0 0 0;
+   0 0 0 0 0 (sy)^2 0 0;
+   0 0 0 0 0 0 0 0;
+   0 0 0 0 0 0 0 0];
+
+%}
 function s = kalmanf(s)
 
 % set defaults for absent fields:
@@ -169,8 +180,12 @@ else
    % This is the code which implements the discrete Kalman filter:
    
    % Prediction for state vector and covariance:
-   s.x = s.A*s.x + s.B*s.u;
-   s.P = s.A * s.P * s.A' + s.Q;
+   %m=mapkal(s.tx,s.ty,s.xe,s.ye,s.xp,s.yp,s.x(3));
+   
+  %s.x=(s.A)*s.x+(s.B)*s.u;
+  s.x=[s.xin;s.yin;s.kin];
+   %s.x =[m(1);m(2);s.x(3)];
+   s.P = s.A * s.P * s.A' + s.B*s.F*s.B' + s.Q;
 
    % Compute Kalman gain factor:
    K = s.P*s.H'*inv(s.H*s.P*s.H'+s.R);

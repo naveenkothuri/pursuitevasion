@@ -176,28 +176,74 @@ else
    
 end
 end
-%{
+%
  %code to check whether centers corresponding to curve lie on straight line
 xcm=I(1)-L*M/2;
 ycm=I(2)+L/2;
 rm=sqrt(((L^2)*(M^2+1)/4)-L*(M*I(1)-I(2)+c));
 xe1=[];
 ye1=[];
-for th=0:pi/10:2*pi
+xe11=[];
+ye11=[];
+%
+for th=0:pi/100:2*pi
     xe1(end+1)=xcm+rm*cos(th);
     ye1(end+1)=ycm+rm*sin(th);
 end
 ke1=sqrt((rm^2-(xcm^2-I(1)^2)-(ycm^2-I(2)^2)+2*(xe1*(xcm-I(1))+ye1*(ycm-I(2))))/(R1));
 xcd=(xe1-xp*(ke1).^2)./(1-(ke1).^2);
 ycd=(ye1-yp*(ke1).^2)./(1-(ke1).^2);
-plot(xcd,ycd)
+plot3(xcd,ycd,ke1)
 hold on
 plot(tx,ty,'*')
 for pp=1:size(xcd,2)
     if((abs(xcd(pp)-I(1))<0.1))
-        Pp=pp
+        Pp=pp;
         break
     end
 end
+%
+kfun=@(t)(sqrt((rm.^2-(xcm^2-I(1)^2)-(ycm^2-I(2)^2)+2*((xcm-I(1)).*(xcm+rm.*cos(t))+(ycm-I(2))*(ycm+rm.*sin(t))))/R1));
+
+
+%kfun=@(t)(((sin(t))*(1-(sqrt((rm^2-(xcm^2-I(1)^2)-(ycm^2-I(2)^2)+2*((xcm-I(1))*(xcm+rm*cos(t))+(ycm-I(2))*(ycm+rm*sin(t))))/R1))^2)+(xp-xcm-rm*cos(t))*(2/R1)*(cos(t)*(ycm-I(2))-sin(t)*(xcm-I(1)))));
+%theta=fsolve(kfun,pi/5);
+
+fun=@(t)(-rm.*sin(t).*(1-(kfun(t)).^2)+(xcm+rm.*cos(t)-xp).*(2/R1)*((ycm-I(2)).*cos(t)-(xcm-I(1)).*sin(t)));
+syms t
+kfun1=(sqrt((rm.^2-(xcm^2-I(1)^2)-(ycm^2-I(2)^2)+2*((xcm-I(1)).*(xcm+rm.*cos(t))+(ycm-I(2))*(ycm+rm.*sin(t))))/R1));
+
+xcfun=((xcm+rm*cos(t))-xp*(kfun1)^2)/(1-kfun1^2)
+
+%fun11=(-rm.*sin(t).*(1-(kfun(t)).^2)+(xcm+rm.*cos(t)-xp).*(2/R1)*((ycm-I(2)).*cos(t)-(xcm-I(1)).*sin(t)));
+
+difffun=diff(xcfun,t);
+for t=0:pi/100:2*pi
+    
+    %fun1(floor(t*100/pi+1))=fun(t);
+       % funn2(floor(t*100/pi+1))=fun2(t);
+        diffun(floor(t*100/pi+1))=double(subs(difffun,t));
+            %xe11(end+1)=xcm+rm*cos(t);
+            % ye11(end+1)=ycm+rm*sin(t);
+
+
+end
+t=0:pi/100:2*pi;
+figure
+plot(t,diffun);
+for t=0:pi/100:2*pi
+
+if(diffun(floor(t*100/pi+1))==min(diffun))
+    theta=t;
+end
+end
+x1=xcm+rm*cos(theta)
+y1=ycm+rm*sin(theta)
+k1=kfun(theta)
+xc=(x1-xp*(kfun(theta)).^2)./(1-(kfun(theta)).^2);
+yc=(y1-yp*(kfun(theta)).^2)./(1-(kfun(theta)).^2);
+
+
+
 %}  
 

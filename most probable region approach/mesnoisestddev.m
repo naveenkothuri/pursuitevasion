@@ -10,7 +10,7 @@ B=1000;
 Aeq=[];
 beq=[];
 sigma = fmincon(fun,x0,A,B,Aeq,beq);
-%
+%{
 x=min(Ix):max(Ix);
 y=min(Iy):max(Iy);
 [X,Y]=meshgrid(x,y);

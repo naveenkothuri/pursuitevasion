@@ -18,16 +18,16 @@ sensor senses position and velocity
 %}
 clear all
 tx=50;ty=40; %Target
-xp=120;yp=-30;  %Pursuer
-vp=10;          % Velocity of pursuer
+xp=50;yp=-30;  %Pursuer
+vp=4;          % Velocity of pursuer
 T=100; %simulation steps T*delT will give total time
-delT=0.1;
+delT=0.3;
 s.u=0;
 ipx=120;ipy=40;
 s.K=eye(3);
-iv=1.7; % This is mean of output.,Initial best estimate
+iv=2; % This is mean of output.,Initial best estimate
 Wpx= 5^2; Wpy =5^2;
-Wv=0.1^2;
+Wv=0.125^2;
 %s.Wpx=sqrt(Wpx);s.Wpy=sqrt(Wpy);s.Wv=sqrt(Wv);
 Ig=mapkal(tx,ty,ipx,ipy,xp,yp,(iv/vp)); %Initial Intercept point based on the sensor data
 pursuerInterceptpointx=Ig(1);
@@ -89,8 +89,6 @@ dfdzyyp=diff(yenext,a4);
 %s.A1=[1 0 0;0 1 0; 0 0 1 ];
 %s.B1=[1 0;0 0;0 1]; %So delT is included in B matrix % This is just initialization because xp(end-1) is not available yet.
 for t=1:T
-     t
-
 A11=double(subs(dfdxxe,{a1,a2,a3,a4,a5},{s(end).x(1),s(end).x(3),xp(end),yp(end),s(end).x(2)}));
 A12=double(subs(dfdxke,{a1,a2,a3,a4,a5},{s(end).x(1),s(end).x(3),xp(end),yp(end),s(end).x(2)}));
 
@@ -101,7 +99,7 @@ A32=double(subs(dfdyke,{a1,a2,a3,a4,a5},{s(end).x(1),s(end).x(3),xp(end),yp(end)
 A33=double(subs(dfdyye,{a1,a2,a3,a4,a5},{s(end).x(1),s(end).x(3),xp(end),yp(end),s(end).x(2)}));
 s(end).A=[A11 A12 A13;0 1 0;A31 A32 A33];
 %eig(s(end).A-(s(end).K)*(s(end).H))
-rank(ctrb(s(end).A,s(end).Q))
+%rank(ctrb(s(end).A,s(end).Q))
 %s(end).A=s(1).A;
 dfdzxxp=diff(xenext,a3);
 dfdzxyp=diff(xenext,a4);
@@ -187,6 +185,7 @@ s(end).B=[B11 B12;0 0;B31 B32];
         hh=1;
         else
             disp('Evader won');
+            t
             break;  
         end                       
      end
@@ -265,3 +264,10 @@ hold on
   
       figure
   plot(xtru(2:end)-posteriorposx)
+    Distancmovedbyevader=sqrt((xtru(1)-xtru(end))^2+(ytru(1)-ytru(end))^2)
+    vtru(end)
+  Timetakenbyevader=Distancmovedbyevader/vtru(end)
+  Distancmovedbypursuer=sqrt((xp(1)-xp(end))^2+(yp(1)-yp(end))^2)
+  Timetakenbypuruser=Distancmovedbypursuer/vp
+    Initialinterceptionpoint=[Igxe;Igye]
+  Finalinterceptionpoint=[Igevader(1);Igevader(2)]
