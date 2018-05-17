@@ -142,19 +142,20 @@ rm=sqrt(((L^2)*(M^2+1)/4)-L*(M*I(1)-I(2)+c));
     th = 0:pi/100:2*pi;
 xd = (rm)*cos(th) + xcm;
 yd = rm*sin(th) + ycm;
-%ke=sqrt(((xd-I(1)).^2+(yd-I(1)).^2)/R1);
+ke=sqrt(((xd-I(1)).^2+(yd-I(1)).^2)/R1);
 ke2=sqrt((yd-M*xd-c)/P1); %this is ok
 ke=sqrt((rm^2-(xcm^2-I(1)^2)-(ycm^2-I(2)^2)+2*(xd*(xcm-I(1))+yd*(ycm-I(2))))/(R1));
 
-plot3(xd,yd,ke2)
+%plot3(xd,yd,ke2)
 hold on
-%plot3(xd,yd,ke)
+plot3(xd,yd,ke)
 xlabel('abscissa of evader');
 ylabel('ordinate of evader');
 zlabel('velocity of evader');
 s.ke=sqrt((rm^2-(xcm^2-I(1)^2)-(ycm^2-I(2)^2)+2*(xd*(xcm-I(1))+yd*(ycm-I(2))))/(R1));
 plot3(xd,yd,ke)
-plot3(xd,yd,k*ones(size(xd,2)))
+box(xcm,ycm,rm,13,13,xe,ye,k,k/5)
+%plot3(xd,yd,k*ones(size(xd,2)))
 %}
 else
     if(I(1)>xe)
@@ -176,7 +177,7 @@ else
    
 end
 end
-%
+%{
  %code to check whether centers corresponding to curve lie on straight line
 xcm=I(1)-L*M/2;
 ycm=I(2)+L/2;
@@ -190,10 +191,13 @@ for th=0:pi/100:2*pi
     xe1(end+1)=xcm+rm*cos(th);
     ye1(end+1)=ycm+rm*sin(th);
 end
+th=0:pi/100:2*pi;
 ke1=sqrt((rm^2-(xcm^2-I(1)^2)-(ycm^2-I(2)^2)+2*(xe1*(xcm-I(1))+ye1*(ycm-I(2))))/(R1));
+kesquare=ke1.^2;
 xcd=(xe1-xp*(ke1).^2)./(1-(ke1).^2);
 ycd=(ye1-yp*(ke1).^2)./(1-(ke1).^2);
-plot3(xcd,ycd,ke1)
+%plot3(xe1,ye1,kesquare)
+plot(th*180/pi,ke1)
 hold on
 plot(tx,ty,'*')
 for pp=1:size(xcd,2)

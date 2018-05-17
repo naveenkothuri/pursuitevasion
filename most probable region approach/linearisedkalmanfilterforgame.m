@@ -17,25 +17,33 @@ sensor senses position and velocity
  y(t) = [1 0 0;0 1 0;0 0 1]*(xe(t);v(t);ye(t))+[exe(t);ev(t);eye(t)]
 %}
 clear all
-tx=50;ty=40; %Target
-xp=50;yp=-30;  %Pursuer
-vp=4;          % Velocity of pursuer
-T=100; %simulation steps T*delT will give total time
-delT=0.3;
+load('s140.mat')
+A=s;
+clear s;
+tx=A.tx;ty=A.ty;
+Xe=A.posmx;Ye=A.posmy;posmv=A.vecm;
+xxtru=A.xtru;yytru=A.ytru;
+vvtru=A.vtru;
+xp=A.xp(1);yp=A.yp(1);
+vp=10;          % Velocity of pursuer
+T=10; %simulation steps T*delT will give total time
+delT=1;
 s.u=0;
-ipx=120;ipy=40;
+ipx=A.xtru(1);ipy=A.ytru(1);
 s.K=eye(3);
-iv=2; % This is mean of output.,Initial best estimate
-Wpx= 5^2; Wpy =5^2;
-Wv=0.125^2;
+iv=8; % This is mean of output.,Initial best estimate
+Wpx=14^2; Wpy =14^2;
+Wv=(.125*10)^2;
 %s.Wpx=sqrt(Wpx);s.Wpy=sqrt(Wpy);s.Wv=sqrt(Wv);
-Ig=mapkal(tx,ty,ipx,ipy,xp,yp,(iv/vp)); %Initial Intercept point based on the sensor data
+
+
+s.delT=delT;
+s.x=[ipx+Xe(1)-xxtru(1);iv+posmv(1)-vvtru(1);ipy+Ye(1)-yytru(1)];
+Ig=mapkal(tx,ty,s.x(1),s.x(3),xp,yp,s.x(2)/vp); %Initial Intercept point based on the sensor data
+s.Ig=Ig;
+
 pursuerInterceptpointx=Ig(1);
 pursuerInterceptpointy=Ig(2);
-
-s.Ig=Ig;
-s.delT=delT;
-s.x=[ipx;iv;ipy];
 s.vp=vp;
 s.P=[Wpx 0 0; 0 Wv 0;0 0 Wpy]; % This is jsut for initialization. Initially it is equal to output covariance matrix
 covx=s(end).P(1,1);
@@ -49,10 +57,10 @@ s.Q =[0.5*Wpx 0 0 ;0 0 0 ;0 0 0.5*Wpy];
 %s.Q=zeros(3);
 s.H= eye(3);
 hh=0;
-vtru=iv+sqrt(Wv)*3; %exact states;
+vtru=iv; %exact states;
 %normrnd(0,sqrt(Wpx))
-xtru= ipx+sqrt(Wpx)*3;
-ytru=ipy+sqrt(Wpy)*3;
+xtru= ipx;
+ytru=ipy;
 Igevader=mapkal(tx,ty,xtru,ytru,xp,yp,vtru/vp);
 %{
 vtru1=iv+sqrt(Wv)*randn; %exact states;
@@ -123,7 +131,9 @@ s(end).B=[B11 B12;0 0;B31 B32];
     %evader1= mapupdatedkal(Igevader1(1),Igevader1(2),tru1(end-2),tru1(end),tru1(end-1),delT);% This is what evader thinks actual
     tru(end+1:end+3,1) = [evader(1);tru(end-1);evader(2)];
     %tru1(end+1:end+3,1) = [evader1(1);tru1(end-1);evader1(2)]+s(end).Q*[randn;randn;randn];
-   s(end).z = (s(end).H)*(tru(end-5:end-3,1)) + sqrt(s(end).R)*randn(3,1); % Here we are using tru(end-5:end-3) because present states are stored there
+   %use this for normal simulations s(end).z = (s(end).H)*(tru(end-5:end-3,1)) + sqrt(s(end).R)*randn(3,1); % Here we are using tru(end-5:end-3) because present states are stored there
+   t
+   s(end).z = (s(end).H)*(tru(end-5:end-3,1)) + [Xe(t+1)-xxtru(t+1);posmv(t+1)-vvtru(t+1);Ye(t+1)-yytru(t+1)]; % Here we are using tru(end-5:end-3) because present states are stored there
    %create a measurement. ( This is actual measurement)
    %Note that when t=0, s.x is still the initial value. This along with
    %actual output is given to kalman filter.
@@ -152,7 +162,7 @@ s(end).B=[B11 B12;0 0;B31 B32];
   % Use this code if evader also monitors pursuer's coordinates at every
    %step and calculates corresponding interception point.
    if(hh~=1)
-   Igevader=mapkal(tx,ty,tru(end-2),tru(end),xp(end),yp(end),(tru(end-1))/vp); % end-1 because our current values,which are needed for calculating interception point are in s(end-1) structure
+   Igevader=mapkal(tx,ty,tru(end-2),tru(end),xp(end),yp(end),(tru(end-1))/vp) % end-1 because our current values,which are needed for calculating interception point are in s(end-1) structure
    %Igevader1=mapkal(tx,ty,tru1(end-2),tru1(end),xp(end),yp(end),(tru1(end-1))/vp); % end-1 because our current values,which are needed for calculating interception point are in s(end-1) structure
 
    end
@@ -174,16 +184,16 @@ s(end).B=[B11 B12;0 0;B31 B32];
         X2 = [tru(end-2),tru(end);tx,ty];
         d2 = pdist(X2,'euclidean');
        
-     if(d4<3)
+     if(d4<15)
         disp('Pursuer won');
         t
         break;                        
-    elseif(d3>d2)
-        
-        if(d2>1)
+     else
+        if(d2<d3)
         Igevader=[tx;ty];
         hh=1;
-        else
+        end
+        if(d2<3)
             disp('Evader won');
             t
             break;  
@@ -203,7 +213,6 @@ s(end).B=[B11 B12;0 0;B31 B32];
  
  end
  hold on
- grid on
      for i =1:t
  posmx(:,i)= s(i).z(1);
  vecm(:,i)= s(i).z(2);
@@ -215,7 +224,7 @@ s(end).B=[B11 B12;0 0;B31 B32];
  posteriorposy(:,i)= s(i+1).x(3);
  end
  
- for i =1:t
+ for i =1:t+1
      xtru(i)=tru(1+3*(i-1));
      vtru(i)=tru(2+3*(i-1));
      ytru(i)=tru(3+3*(i-1));
@@ -227,32 +236,38 @@ s(end).B=[B11 B12;0 0;B31 B32];
      ytru1(i)=tru1(3+3*(i-1));
  end
  %}
+ Igevader=mapkal(tx,ty,tru(end-2),tru(end),xp(end),yp(end),(tru(end-1))/vp); % end-1 because our current values,which are needed for calculating interception point are in s(end-1) structure
+
  xc=(xtru(1)-((xp(1))*((vtru(1)/vp)^2)))/(1-(vtru(1)/vp)^2);
 yc=(ytru(1)-((yp(1))*((vtru(1)/vp)^2)))/(1-(vtru(1)/vp)^2);
 r=double(sqrt(xc^2+yc^2-((xtru(1)^2+ytru(1)^2)/(1-(vtru(1)/vp)^2))+((vtru(1)/vp)^2*(xp(1)^2+yp(1)^2))/(1-(vtru(1)/vp)^2)));
 h=circle(xc,yc,r);
 
  hold on
- %{
- xc1=(xtru1(1)-((xp(1))*((vtru1(1)/vp)^2)))/(1-(vtru1(1)/vp)^2);
-yc1=(ytru1(1)-((yp(1))*((vtru1(1)/vp)^2)))/(1-(vtru1(1)/vp)^2);
-r1=double(sqrt(xc1^2+yc1^2-((xtru1(1)^2+ytru1(1)^2)/(1-(vtru1(1)/vp)^2))+((vtru1(1)/vp)^2*(xp(1)^2+yp(1)^2))/(1-(vtru1(1)/vp)^2)));
+ %
+ xc1=(tru(end-2)-((xp(end))*((vtru(end)/vp)^2)))/(1-(vtru(end)/vp)^2);
+yc1=(tru(end)-((yp(end))*((vtru(1)/vp)^2)))/(1-(vtru(1)/vp)^2);
+r1=double(sqrt(xc1^2+yc1^2-((tru(end-2)^2+tru(end)^2)/(1-(vtru(1)/vp)^2))+((vtru(1)/vp)^2*(xp(end)^2+yp(end)^2))/(1-(vtru(1)/vp)^2)));
 h=circle(xc1,yc1,r1);
 hold on
  %}
   plot(posmx,posmy,'r.')
   plot(pursuerInterceptpointx,pursuerInterceptpointy,'bo')
+  plot(posteriorposx,posteriorposy,'b.')
   plot(tx,ty,'r*');
-  plot(xp,yp,'b.');
+  plot(xp(1:t),yp(1:t),'b.');
   plot(Igevader(1),Igevader(2),'ro');
-  
+      posteriorvec1(1)=vecm(1);
+  for i=1:size(posteriorvec,2)
+      posteriorvec1(i+1)=posteriorvec(i);
+  end
  %plot(posteriorposx,posteriorposy,'b*')
- plot(xtru,ytru,'g.')
+ plot(xtru(1:t),ytru(1:t),'g.')
      figure
  plot(vecm,'r.')
  hold on
- plot(posteriorvec,'b-');
-  plot(vtru,'g-')
+ plot(posteriorvec1,'b-');
+  plot(vtru(1:end-1),'g-')
   hold off
   figure
   subplot(3,1,1)
@@ -262,12 +277,19 @@ hold on
   subplot(3,1,3)
   plot(covy)
   
-      figure
-  plot(xtru(2:end)-posteriorposx)
+     % figure
+ % plot(xtru(2:end)-posteriorposx)
     Distancmovedbyevader=sqrt((xtru(1)-xtru(end))^2+(ytru(1)-ytru(end))^2)
-    vtru(end)
+    %vtru(end)
+    for i=1:t
+Ia=mapkal(tx,ty,tru(i*3-2),tru(i*3),xp(i),yp(i),0.8);
+disst(i)=sqrt((tx-Ia(1))^2+(ty-Ia(2))^2);
+end
   Timetakenbyevader=Distancmovedbyevader/vtru(end)
   Distancmovedbypursuer=sqrt((xp(1)-xp(end))^2+(yp(1)-yp(end))^2)
   Timetakenbypuruser=Distancmovedbypursuer/vp
     Initialinterceptionpoint=[Igxe;Igye]
-  Finalinterceptionpoint=[Igevader(1);Igevader(2)]
+  Finalinterceptionpoint=[Ia(1);Ia(2)]
+    Finalevader=[xtru(end);ytru(end)]
+      sqrt((tx-Igxe(1))^2+(ty-Igye(1))^2)
+  sqrt((tx-Ia(1))^2+(ty-Ia(2))^2)

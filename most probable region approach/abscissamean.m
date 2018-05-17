@@ -11,7 +11,7 @@ fun1=@(x,y,k)(xcor1(x,y,k).*exp((-1./(2.*sx.^2)).*((x-x0).^2+(y-y0).^2)).*exp((-
 %%ycor1=@(x,y,k)(((y-yp.*k.^2)./(1-k.^2)+sqrt((k./(1-k.^2)).^2).*(sqrt((x-xp).^2+(y-yp).^2).*abs(yt.*(1-k.^2)-y+yp.*k.^2))./sqrt((xt.*(1-k.^2)-x+xp.*k.^2).^2+(yt.*(1-k.^2)-y+yp.*k.^2).^2)));
 ycor1=@(x,y,k)(yt+((yt.*(1-k.^2)-y+yp.*k.^2)./(xt.*(1-k.^2)-x+xp.*k.^2)).*(xcor1(x,y,k)-xt));    
 fun2=@(x,y,k)(ycor1(x,y,k).*exp((-1./(2.*sx.^2)).*((x-x0).^2+(y-y0).^2)).*exp((-1./(2.*sk.^2)).*((k-k0).^2))./(((2.*pi).^1.5).*(sx.^2).*sk));
-map1(xt,yt,x0,y0,xp,yp,k0)
+%map1(xt,yt,x0,y0,xp,yp,k0)
 ux=[];
 uy=[];
 ke=k0-3*sk;
@@ -28,8 +28,9 @@ uy(end+1)=ycor1(xe,ye,ke);
 end
 end
 end
-plot(ux,uy,'*')
 %{
+plot(ux,uy,'*')
+
 [x,y]=meshgrid(-3*sx+x0:x0+3*sx,-3*sx+y0:y0+3*sx);
 figure
 plot3(x,y,fun1(x,y,2));

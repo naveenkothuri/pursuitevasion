@@ -3,7 +3,16 @@ n=5;
 liml=[];
 limit=[];
 Lim=[];
-for j = 1:2:size(lim,2)
+for j = 1:size(lim,2)
+    if(lim(j)<0)
+        lim(j)=lim(j)+2*pi;
+    end
+end
+for j=1:2:size(lim,2)
+    if(lim(j)>lim(j+1))
+        lim(j+1)=lim(j+1)+2*pi;
+    end
+end
     
 for i=0:1:n
     liml(end+1)=lim(j)+i*(lim(j+1)-lim(j))/n;   
@@ -22,5 +31,16 @@ limit(end)=[];
 Lim=[Lim limit];
 limit=[];
 liml=[];
+
+for i=1:size(Lim,2)
+    if(Lim(i)>2*pi)
+        Lim(i)=Lim(i)-2*pi;
+    end
+    if(Lim(i)>pi)
+        Lim(i)=Lim(i)-2*pi;
+    end
+end
+    
+
 end
 

@@ -185,6 +185,7 @@ else
   %s.x=(s.A)*s.x+(s.B)*s.u;
   s.x=[s.xin;s.yin;s.kin];
    %s.x =[m(1);m(2);s.x(3)];
+   %s.A=eye(3);
    s.P = s.A * s.P * s.A' + s.B*s.F*s.B' + s.Q;
 
    % Compute Kalman gain factor:

@@ -1,5 +1,5 @@
 
-function Imean= map1(xt,yt,xe,ye,xp,yp,k)
+function Imean= map1(xt,yt,xe,ye,xp,yp,sx,sk,k)
 figure
 xcor1=@(x,y,k)(((x-xp.*k.^2)./(1-k.^2)-sqrt((k./(1-k.^2)).^2).*(sqrt((x-xp).^2+(y-yp).^2).*abs(xt.*(1-k.^2)-x+xp.*k.^2))./((xt.*(1-k.^2)-x+xp.*k.^2).^2+(yt.*(1-k.^2)-y+yp.*k.^2).^2).^0.5));
 %ycor1=@(x,y,k)(-1*(xt-xcor1(x,y,k)).*((yt.*(1-k.^2)-y+yp.*k.^2)./(xt.*(1-k.^2)-x+xp.*k.^2))+yt);
@@ -18,12 +18,12 @@ for r=4
     end  
 end
 %}
-n=5;
+n=sx;
 xeg=xe;
 kg=k;
 yeg1=ye-2*n-n;
 yeg=ye;
-k=k-(.1)*3;
+k=k-(sk)*3;
 for k2=1:5
 k=k+(0.1);
 ye=yeg1;
