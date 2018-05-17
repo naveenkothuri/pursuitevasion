@@ -1,0 +1,55 @@
+load('s23.mat')
+A=s1;
+xetru=A.xetru;
+yetru=A.yetru;
+vtru=(A.vtru);
+ketru=vtru(1)/A.vp1;
+xp=A.xp;yp=A.yp;
+tx1=A.tx1;ty1=A.ty1;
+vp1=A.vp1;
+T=A.T;
+posmv=A.posmv;
+posmx=A.posmx;posmy=A.posmy;
+posteriorposIx=A.posteriorposIx;posteriorposIy=A.posteriorposIy;
+posteriorvec=A.posteriorvec;
+Igactualx=A.Igactualx;Igactualy=A.Igactualy;
+covv=A.covv;
+covIx=A.covIx;covIy=A.covIy;
+%%
+ xc=(xetru(1)-((xp(1))*((ketru)^2)))/(1-(ketru)^2);
+yc=(yetru(1)-((yp(1))*((ketru)^2)))/(1-(ketru)^2);
+r=double(sqrt(xc^2+yc^2-((xetru(1)^2+yetru(1)^2)/(1-(ketru)^2))+((ketru)^2*(xp(1)^2+yp(1)^2))/(1-(ketru)^2)));
+h=circle(xc,yc,r);
+ hold on
+  plot(xetru,yetru,'r.');
+  plot(tx1,ty1,'r*');
+  plot(xp,yp,'b.');
+  %plot(xe,ye,'g.')
+  %plot(Exx,Eyy,'r*')
+   plot(posmx,posmy,'bo');
+  plot(Igactualx(end),Igactualy(end),'ro');
+  figure
+  plot(T,vtru)
+  hold on
+  plot(T(2:end),posteriorvec)
+  plot(posmv,'b-')
+  figure
+  subplot(3,1,1)
+  plot(covIx)
+  subplot(3,1,2)
+  plot(covIy)
+  subplot(3,1,3)
+  plot(covv)
+  figure  
+  subplot(3,1,1)
+    plot(Igactualx(2:end)-posteriorposIx)
+  subplot(3,1,2)
+    plot(Igactualy(2:end)-posteriorposIy)
+    subplot(3,1,3)
+    plot(vtru(2:end)-posteriorvec)
+  Distancmovedbyevader=sqrt((xetru(1)-xetru(end))^2+(yetru(1)-yetru(end))^2)
+  Timetakenbyevader=Distancmovedbyevader/vtru(end)
+  Distancmovedbypursuer=sqrt((xp(1)-xp(end))^2+(yp(1)-yp(end))^2)
+  Timetakenbypursuer=Distancmovedbypursuer/vp1
+  Initialinterceptionpoint=[Igxe;Igye]
+  Finalinterceptionpoint=[Igactualx(end);Igactualy(end)]
